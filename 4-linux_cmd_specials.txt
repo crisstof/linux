@@ -1,0 +1,77 @@
+*********************************************
+    LINUX                                 
+*********************************************
+
+compter le nombre de fichier
+----------------------------
+ls -l | wc -l
+ls -R | wc -c
+
+afficher les noms des disques
+-----------------------------
+A savoir comment appeler le disque puisque sous windows et linux
+les disques ont des noms différents: windows:H linux:/drive/h
+df   #affiche les noms des disques
+
+affiche la taille des fichiers
+-------------------------------
+du -sh ./etc 
+
+ssh
+---
+ssh-keygen -b 4096 -t rsa   #Créer une paire de clé ssh:
+
+comparer fichier ou répertoire sur 2 serveurs différents
+---------------------------------------------------------
+nous sommes sur le serveur n°2 et nous voulons comparer sa conf avec le serveur n°1 :
+diff -y <(ssh utilisateur@serveur1 cat /etc/monfichier) <(cat /etc/monfichier)
+nous voulions comparer le contenu de deux répertoires de la même manière
+diff -y <(ssh utilisateur@serveur1 find /etc/monrepertoire | sort) <(find /etc/monrepertoire | sort)
+comparer sur serveur distant
+diff <("ssh -i /drives/h/work/ssh/keyName" nNom@mon.serveur.fr find /home/nNom/backup/RecoveRx | sort) <(find /drives/g/RecoveRx | sort)
+diff /chemin/vers/fichier <(ssh ServeurDistant 'cat /chemin/vers/fichier')
+vimdiff /chemin/vers/fichier scp://remotehost//chemin/vers/fichier
+diff <(ssh ServeurDistant1 'cat /chemin/vers/fichier') <(ssh ServeurDistant2 'cat /chemin/vers/fichier')
+
+
+
+copie sur un serveur distant
+----------------------------
+Avec une clé ssh et une adresse  nNom@mon.serveur.fr
+#avec rsync (nous avons une reprise après coupure et si la copie complète est ok)
+rsync -av -e "ssh -i /drives/h/work/key/ssh/maKey" /drives/g/ nNom@mon.serveur.fr:/home/nNom/backup/
+
+rsync source/ user@machine:/destination/
+rsync user@machine:/source/ destination/
+
+/drives/g/dossier/ #copie dans le dossier prévu
+/drive/g/dossier   #copie avec le répertoire donc si on est dans home et drive/home/dossier/les fichiers  
+OPTIONS	ACTION
+-r	visite récursive des répertoires
+-l	copie les liens symboliques comme liens symboliques
+-p	préserve les permissions
+-t	préserve les dates
+-g	préserve le groupe
+-o	préserve le propriétaire (root uniquement)
+-D	préserve les périphériques (root uniquement)
+-a	mode archivage; identique à -rlptgoD (pas -H)
+-v	De nombreuses informations sont affichées lors du transfert.
+-z	Compresse le fichier pour un meilleur transfert par le reseau.
+–delete	ATTENTION ! Si le fichier (ou son contenu) n'existe plus dans “source”, il sera supprimé dans “destination”.
+
+rsync --partial --progress --rsh=ssh [source] [user]@[host]:[destination]
+Les options :
+--partial relance le téléchargement depuis le point d’arrêt
+--progress affiche la progression du transfert
+--rsh=ssh sécurise le transfert
+
+si plein de petit fichier faire un pip -tar (empaqueter debut et depaqueter à la fin)
+
+
+
+SCP
+scp "ssh -i /drives/h/ssh/key" /drives/g/home/name/    nNom@mon.serveur.fr:/home/nName/backup/name/
+
+
+
+

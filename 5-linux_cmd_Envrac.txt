@@ -1,0 +1,81 @@
+		*****************************************************************
+		*			Linux Commandes				*
+		*****************************************************************
+
+
+
+
+ls 		Lister le contenu d’un répertoire
+alias 		Définir ou afficher les alias/td>
+unalias 	Supprimer les définitions d’alias
+df		affcihe la quantité d'espace disponible sur le système de fichiers-volume
+pwd 		Afficher le répertoire de travail
+cd 		Changer de répertoire
+cp 		Copier des fichiers et des répertoires
+tar 		Crée des archives à partir de plusieurs fichiers spécifés ou extraire une archive
+rm 		Supprimer des fichiers et des répertoires
+mv 		Déplacer (renommer) des fichiers et des répertoires
+mkdir 		Créer des répertoires
+man 		Afficher la page de manuel des autres commandes
+touch 		Créer des fichiers vides
+chmod 		Modifier les autorisations de fichiers
+./ 		Exécuter un exécutable
+exit 		Quitter la session actuelle du shell
+sudo 		Exécuter les commandes en tant que superutilisateur
+shutdown 	Arrêter votre machine
+htop 		Afficher les informations sur les processus et les ressources
+unzip 		Extraire de fichiers ZIP compressés
+apt, yum, pacman 	Gestionnaires de paquets
+echo 		Afficher les lignes de texte
+cat 		Afficher le contenu du fichier
+ps 		Rapports sur l’état des processus shell
+htop		Affiche les processus apt install htop
+kill 		Terminer les programmes
+ping 		Tester la connectivité du réseau
+vim 		Une édition de texte efficace
+history 	Afficher une liste des commandes précédentes
+passwd 		Modifier le mot de passe de l’utilisateur
+which 		Renvoyer le chemin binaire complet d’un programme
+shred 		Écraser un fichier pour en cacher le contenu
+less 		Inspecter les fichiers de manière interactive
+tail 		Afficher les dernières lignes d’un fichier
+head 		Afficher les premières lignes d’un fichier
+grep 		Afficher les lignes qui correspondent aux modèles
+whoami 		Afficher le nom d’utilisateur
+whatis 		Afficher les descriptions d’une seule ligne
+wc 		Compter les mots d’un fichier
+uname 		Afficher des informations sur le système d’exploitation
+neofetch 	Afficher des informations sur le système d’exploitation et le matériel
+find 		Rechercher des fichiers qui suivent un modèle
+locat 		Recherche les fichiers avec le nom en paramètre
+wget 		Récupérer des fichiers sur Internet
+more		visualise le contenu d'un fichier page à page
+curl		envoyer ou télécharger un fichier accessible sur le réseau
+comm 		affiche 1col lignes uniques fic1 2col lignes uniques fic2 3col lignes communes aux deux
+dpkg -i 	installe un fichier .deb
+lsmod		affiche l'état des modules du noyau aide à résoudre des problèmes sur un serveur
+rsync		Synchronise un disque ou fichier avec le contenu d'un autre disque ou d'un autre fichier en 
+		réseau similaire à rcp mais offre plus d'options.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,172 @@
+*********************************************
+    LINUX    Le SHELL et les environnements                             
+*********************************************
+Chaque utilisateur possède un Shell dan sle fihcier /etc/passwd
+Pour éviter des commandes sur une ligne et le Enter on a '\'
+Commentaire #
+man bash
+
+Les commandes externes: Elles créent un processus de shell et exécutent la commande dans ce shell fils. Ces commandes ne modifient donc pas l’environnement du processus shell courant comme les internes.
+tout programme que vous créez est une commande externe.
+
+Présentation du shell Bash
+--------------------------
+Lorsque l’exécution d’une commande (appelée processus) est lancée, une table des descripteurs de fichier ouverts par ce processus est créée. Cette table contient une entrée par fichier manipulé par la commande (ou processus). 
+Dans cette table, les fichiers sont identifiés par leur index dans la table : un numéro appelé descripteur de fichier ou file descriptor ou fd.
+Les 3 premières entrées de cette table (index 0,1,2) sont initialisées par trois fichiers (systématiquement ouverts à chaque lancement de processus)
+    • Le descripteur de fichier 0 : correspond à l’entrée standard du processus ou stdin initialisé avec le fichier spécial correspondant au clavier.
+    • Le descripteur de fichier 1 : correspond à la sortie standard (l’écran) du processus ou stdout  initialisé avec le fichier spécial correspondant à l’écran.
+    • Le descripteur de fichier 2 : correspond à la sortie erreurs ou stderr du processus, initialisé avec le fichier spécial correspondant à l’écran.
+
+On peut les modifier en redirigeant les e/s de ce processus sur des fichiers.
+on peut créer un fichier avec la commande : 
+cat monfichier > ./copiefichier
+La sortie standard  du processus (fichier1) est redirigée sur le fichier copiefichier
+Le fichier copiefichier est créé une copie de monfichier
+Une autre redirection de sortie:
+Cat monfichier 1> ./une copiedufichier  // sortie standard (fd=1) nous pouvons remplacer > par >>
+Une autre redirection de sortie erreur:
+Commandex  >  fichierresultat  2>fichierdeserreurs
+Crée 2 fichiers un avec le résultat et l’autre avec les erreurs
+Pour redirigées erreurs dans le même fichier que le résultat de la commande.
+A noter l’existence d’un fichier ‘poubelle’ dans lequel il est possible de rediriger les erreurs, dans le cas de procédures génératrices d’erreurs connues et sans intérêt. 
+Ce fichier ‘poubelle’ est  /dev/null
+Redirection des erreurs dans le fichier poubelle
+Commandey  1> fichierRes  2>/dev/null
+
+Redirection des données en entrée.
+more  <  ./fic  //liste le fichier fic !
+il est possible de simuler l’entrée clavier le shell lira les lignes comme étant stdin jusqu’à  l’indication de la chaine de caractère indiquée à la suite << utilisé dans les fichiers de commande.
+cat > monfich  <<FIN
+> ceci est le remplissage de mon fichier
+> et s'arrêtera
+> à la rencontre de l'entrée
+> FIN
+----------------------------------------------------------------------------------------------------
+Les fichiers de commandes
+-------------------------
+Un fichier contenant une suite de commande que le shell exécute. On parle de shell-script ou procédures
+Les différentes manières d’exécuter un shell-script :
+    • Comme une commande : il suffit de lui attribuer des droits d’exécution et de lancer la procédure comme une commande classique
+Chmod +x  fichiercommande
+
+Au moment de l’exécution, le système analyse l’entête du fichier si elle ne décrit pas un fichier binaire, il l’interprète comme un fichier commande il lance un processus shell pour l’interprèter. Il faut que le chemin d’accès au fichier soit dans la  variable d’environnement PATH (si le fichier de commande est dans le répertoire courant la variable PATH doit contenir le point).
+
+Dans un autre shell
+Il y a création d’un nouveau shell.
+bash  monfichierdecommande //pas besoin d’avoir des droits d’exécution.
+
+Dans le processus courant
+Utilisant la commande interne ‘ . ‘ permet de lire et exécuter les commandes se trouvant dans le fichier de commandes passé en paramètre sans créer de nouveaux processus.
+Comme . est une commande il faut un espace.
+. monfichierdecommande
+
+En début de script:
+Au début d'un bash:
+# ! /bin/bash  met de la couleur visuel # ! /chezmoi/mon_interpreteur
+                                        # Le shell soumettra les ignes qui suivent à votre  
+					# interpréteur de ligne de commande
+Faire de la mise au point:
+si le script est particulièrement long il s'arrêtera à la première erreur rencontrée:
+-v liste de ligne telle qu'elle a été codée
+-x liste de ligne après résolution des variables s'il y en a sur cette ligne
+-e arrête la procédure à la première erreur
+Ces options peuvent être positionnées de façon permanente pour le shell
+Sortie de fichier de commandes
+Sortie prématurée se fait par la commande exit [n]  //n est le code retour ou status de la procédure.
+Exit 1 //code retour 1
+Deux commandes utiles:
+---------------------
+which   #permet de connaître le nom complet du fichier que vous voulez utliser en cas d'homonyme.
+which more  => /bin/more
+whereis #permet de connaitre le (s) emplacements des exécutables des sources et de la documentation sur une commande.
+whereis more => more: /bin/more  /usr/share/man/ma1/more.1.gz
+Cela signifie que l'exécutable est /bin/more et la documentation est dans le fichier /usr/share/man/ma1/more.1.gz
+
+
+
+
+
+
+
+**************************************************************************************
+**********************************
+	vi - vim
+**********************************
+i : insérer du texte
+echap : retour en mode interactif
+k (haut) l (droite) j (bas)  h (gauche) : déplacement (flêche mode insertion)
+
+0 et $ : déplace début et fin de ligne
+w : se déplacer de mot en mot
+:w  : enregistrer  :wq  enregistre et quit
+
+opérations standards:
+x : effaces des lettres
+d : efface des mots, des lignes
+dd : supprimer une ligne
+dw : supprimer un mot
+yy :  copier une ligne en mémoire
+yw : copier un mot
+y$ : copier du curseur jusqu'à la fin de la ligne
+p  : coller
+r : remplacer une lettre rs (remplace par s)
+u : annule la modification
+G : 7G sauter à la ligne numéro x
+/recherche_le_mot : 
+:r autrefichier : fusion d'un fichier
+:sp  : découpe l'affichage si on veut permet de voir 2 endroits différents
+:vsp : couper en horizontale
+
+
+
+**********************************
+	Système de fichier Unix
+**********************************
+nfs  network file system
+jfs  journalized file system
+hfs+ système de fichier Mac OS X
+ext2 système de fichier de linux
+ext3 amélioration du format ext2
+vfat système de fichier FAT 32
+proc visualisation et manipulation des processus
+fd   descripteurs de fichier (/dev/fd)
+
+La liste des sytèmes de fichiers supportés par l'os:
+/proc/filesystems et la commande fsck permet de vérifier et de réparer les système
+de fichiers endommagés (cohérence entre fichiers présents et tables des inodes références vers les blocs de données...)
+ 
+Sous UNIX tout est fichier: certains sont virtuels et ne correspondent à aucune partition.
+ils servent de réprésentation logique à un aspect donné du système.
+ils n'occupent aucune place sur le disque, et sont émulés dynamiquement à chaque accès par le noyau du système d'exploitation.
+
+- proc processus actifs et leurs propriétés (arguments, répertoire de travail...) sous formes de fichiers.
+- fd permet d'accéder aux descripteurs de fichiers pour simplifier la programmation car à l'intérieur des programmes ces descripteurs sont vus comme des fichiers.
+
+Les inodes
+-----------
+	Tout fichier est avant tout stocké sous la forme d'un noeud d'index, ou inode, contenant l'ensemble des métainformations associées aux fichiers.
+Ce noeud d'index comprend plusieurs pointeurs vers les zones du disque dur contenant le contenu du fichier sous forme de séquences de secteur linéaires: Si ces zones ne sont pas contigües, on parlera de fragmentation.
+	Le noeud d'index ne contient pas le nom du fichier, mais un entier permettant de l'identifier de manière unique: plusieurs noms peuvent représenter des liens vers un même fichier comme les liens symboliques.
+
+Les fichiers liens
+------------------
+il est possible d’avoir plusieurs noms dans différents répertoires pour un même fichier : 
+Ces noms sont des identificateurs du fichier et ont le même numéro d’inode. 
+Cette relation entre un numéro d’inode et un identificateur s’appelle un lien.
+Tout fichier possède au minimum un lien. 
+Lorsque le lien est établi dans le même système de fichiers le lien est dit simple 
+(les droits sont les mêmes, fichiers et lien car c’est le même objet). 
+Par contre un lien symbolique peut être mis dans un autre système de fichiers que le fichier d’origine : c’est un pointeur vers l’autre fichier, ses permissions seront indépendantes du fichier source.
+
+Les fichiers spéciaux
+---------------------
+(b,c) associe un nom de fichier à un périphérique ou une communication clavier écran imprimante et sont stocké dans le répertoire /dev possèdent un inode mais pas de bloc de données et sont gérés par des interfaces d’accès à la ressource physique différents selon leur type.
+ls -l /dev   #liste 2 imprimantes /major(driver)/mineur(imprimante)
+crw--w---- 1 root lp1  6,1  .....
+crw--w---- 1 root lp1  6,2  .....
+
+
+
+
+
