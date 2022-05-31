@@ -7,3 +7,14 @@
 
 
 
+********************************************
+    UBUNTU
+********************************************
+Alt + impr.ecran : capture d'écran d'une fenêtre
+Maj + impr.ecran : capture d'écran d'une zone choisie
+Ctrl+Alt+Maj+R : enregistrement vidéo de l'écran
+
+
+
+
+
