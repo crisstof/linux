@@ -1,0 +1,63 @@
+connexion ssh: ssh nom@serveur
+
+*************crontab***********
+-------------------------------
+crontab est disponible dans etc/crontabs/ dans le fichier root
+script utilisateur dans usr/bin/ fichier script utilisateur
+
+Cron
+crontab -e  #editeur cron  pour modifier des tâches planifiées
+crontab -l  #examine les tâches planifiées de l'utilisateur
+crontab -e -u nom_utilisateur #pour modifier celles d'un autre utilisateur
+
+
+mn  H  jour mois numero/semaine
+0   0   13   1         5        tâche  #tâche exécuter à 0mn et 0H après démarrage, le 13e jour du 1ier mois (janvier) et tous les vendredis (5e J. de la semaine)
+
+5 3  * *  * nomdutilisateur /usr/bin/apt-get update
+# update à 3:05 (5e minute de la 3e heure), chaque jour de chaque mois (les * dans "jour", "mois" et "jours de la semaine", avec les droits de l'utilisateur nomdutilisateur.
+
+*/5 9-17 * * mon,tue,wed,thu,fri wall "Où en es tu ?"
+Vous pouvez faire tourner cron toutes les 5 minutes, entre 9H à 17H, et uniquement du lundi au vendredi, avec un message "Où en es tu ?" 
+(on met * pour les colonnes "jour dans le mois" et "mois", puisqu'on utilise pas ces données)
+
+0 9 10 jan  * echo "C'est l'anniversaire de ta Maman aujourd'hui !" >>~/readme
+rappeler un anniversaire à 9h du matin le 10 janvier chaque année
+
+
+il ne reste plus quà éditer le fichier /etc/crontabs/root :
+00 22 * * * /usr/local/bin/wifidown.sh      #arret wifi a  22h    
+00 05 * * * /usr/local/bin/wifiup.sh        #active wifi a 5
+00 11 * * 1-5 /usr/local/bin/wifidown.sh    #arret wifi a  11
+00 16 * * 1-5 /usr/local/bin/wifiup.sh      #active wifi a 16
+
+wifi actif du lundi au vendredi de 5h à 11h  et de 16h à 22h et le week end actif de 5h à 22h
+
+Par défaut, cron est désactivé. Il reste donc quelques commandes à taper :
+mkdir -p /var/spool/cron
+/etc/init.d/cron enable
+/etc/init.d/cron start
+Ainsi, en semaine (du lundi au vendredi) le Wi-Fi est activé de 5h à 11h et de 16h à 22h. Le week-end, il est activé de 5h à 22h.
+
+--------------------------------------
+/usr/bin /*exemple de script horaire du wifi*/
+Créer un fichier
+wifion5ghz.sh 
+#!/bin/sh
+uci set wireless.@wifi-device[1].disabled=0
+uci set wireless.@wifi-iface[1].disabled=0
+uci commit wireless
+wifi
+et wifioff5ghz.sh
+#!/bin/sh
+uci set wireless.@wifi-device[1].disabled=1
+uci set wireless.@wifi-iface[1].disabled=1
+uci commit wireless
+wifi
+
+
+/etc/crontabs/root :
+pour crontab
+crontab -e
+
+-------------------------------------
