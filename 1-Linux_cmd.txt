@@ -86,6 +86,109 @@ linux online: http://bellard.org/jslinux/
 
 
 
+1>ssh networkName@192.16.0.110   	#acces ssh
+2>ls , ls -l , ls -al          	  	#affiche dossier et fichier
+3>pwd                           	#le chemin où l'on est
+4>cd  , cd / , cd ..			#se déplacer à la racine	
+5>touch afile.txt , touch namefile contenu ici
+  touch linode{1..10}                   #crée 10 fichiers linode numérotés
+  touch -d tomorrow creatfiletata.txt   #crée un fichier date demain
+6>echo Hello!
+  echo "Stuff stuffé > newfile.awesome
+7>nano file.txt  , vim file.txt		#editeur de text
+8>cat newfile.awesome			#affiche le contenu
+  shred newfile.awesome			
+9>mkdir mydirectory			#crée répertoire
+  cp afile.txt ./mydirectory/afile.txt  #copie le fichier
+  mv newfile.txt  .mydirectory/newfile.txt #déplace le fichier
+10>rmdir mydirectory/ (non non vide) > rm -t mydirectory/ #supprime le répertoire
+11>ln -s creatlien.txt  coucoufile	#crée un lien
+   crée le lien symbolique: coucoufile  -> creatlien.txt  
+12>whoami				#qui je suis
+13>sudo useradd criss
+   sudo adduser paul			#ajoute utilisateur
+   su paul 
+   exit
+   sudo passwd paul
+   passwd
+14>sudo apt update && apt upgrade  -y
+15>apt install finger
+   finger paul
+16>man finger
+   man cat
+   man man
+17>whatis finger
+   finger (1)  -user information lookup program
+18>which finger
+   /usr/bin/finger
+19>whereis finger
+ finger:  /usr/bin/finger   /usr/share/man/man1/finger.1.gz
+20>wget  https://raw.githubusercontent.com/criss/file.txt...  #télécharge
+21>curl  https://raw.githubusercontent.com/criss/file.txt > thebible.coffee
+22>zip thebible.zip  thebible.coffee  #zip le fichier en thebible.zip
+23>unzip thbible.zip
+24>less  , head thebible.coffee , tail thebible.coffee #affiche debut, fin, 
+25>cmp biblz  thebible.coffee   #compare : byte 100, line 2
+26>diff biblz rhzbible.coffee	#affiche la différence
+27>cat thebible.coffee  |  sort #tri
+28>sudo fi nd /  -name  "thebible*"  #trouve le nom thebible et affiche l'emplacement
+   sudo find  .  -type  f  -name ".*"
+   find  .  -type  f  -empty  #affiche les fichier vide
+   find . -perm  /a=x  #affiche les permission des fichiers
+29>chmod  +x  executethis.sh #change permission
+30>chown paul execute.sh     #change d'utilisateur
+31>ifconfig   (sudo apt install net-tools)
+32>ip address
+33>ip address |  grep eth0 | grep inet  #affiche ce qu'on cherche et cascade pour la précision
+34>ip address |  grep eth0 | grep inet | awk  '[print $2}' #affiche le 2iem mot
+35>cat  /etc/resolv.conf #nameserver 127.0.0.53
+   resolvectl status     #current dns server  72.14.188.5
+36>ping nameserverweb
+   ping  -c  5 nameweb
+   ping -c 5 -s 500  nameweb
+37>tracerout nameweb
+38>netstat -tulpn   	#port en écoute ou pas
+39>ss -tulpn            #équiv
+40>sudo iptables -I INPUT -p tcp -m tcp --dport 80 -j ACCEPT  #parefeu
+41>sudo ufw  allow  80 #Rules updated
+   ufw status enable #active ufw
+42>uname -a #Linux 
+43>ap install neofetch 
+44>cal   #calendrier
+45>free  #Mem  Swap 
+46>df  -H  #filesystem size  mounted
+47>ps -aux  #processus  ->  ps -aux  | grep thisbash  ->  kill -9  6659
+48>top,  htop
+49>pkill -f thisbash #au lieu de kill -9  id
+50>systemctl  (start, stop, restart) service
+51>history
+52>reboot   
+53>sudo shutdown -h now
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
