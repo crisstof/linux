@@ -1,30 +1,10 @@
-*********************
-    LINUX                                 
-*********************
-Les fichiers linux
-/bin :commande de base du système presque toutes les commandes sont externes non intégrées au shell.
-/sbin :commands pour l’administration système
-/boot :informations nécessaire au démarrage 
-/dev : Pseudo-fichiers permettant de communiquer avec les périphériques
-/etc : la plupart des fichiers de configuration
-/home :répertoires personnels utilisateurs
-/lib : contient les bibliothèques partagées (équivalent au dll)
-/sys :fichier system comme les id attention cela peut être fatale
-/run :information du système depuis son dernier démarrage service, utilisateurs actif…)
-/tmp :fichier temporaire
-/var :données fréquemment réécrites données variables et diverses
-/usr :logiciels installés avec le système
-/root :répertoire administrateur 
-/mnt :les répertoires utilisés pour monter temporairement un système de fichier (cd-rom…)
-/lost+found
-/opt :ici on installe les logiciels commerciaux
-/media :dossier périphérique
-/srv :données pour les services du système
-/usr/local : Programmes compilés et installés en local
-/home : contient les répertoires personnels utilisateurs
-***********************************************************************************************
-Archiver (tar) et compresser (gzip)
+********************************************
+    LINUX COMMANDES GENERALES UTILISATION                     
+********************************************
 
+-------------------------------------
+Archiver (tar) et compresser (gzip)
+-------------------------------------
 archiver (regrouper les fichiers)
 tar -cvf mon_archive.tar  mon_dossier/  
 ou
@@ -49,50 +29,60 @@ tar -zxvf archiv.tar.gz #décompresse
 
 
 
-
-
-**************************************************************************************
-linux online: http://bellard.org/jslinux/
-**************************************************************************************
-
-			COMMANDES LINUX
-                       *****************
+-------------------------------------
 lister le contenu d'un répertoire
----------------------------------
+-------------------------------------
 ls ~  #ls /home/user/
 ls ~/toto #le /home/user/toto
 ls -alt ./toto
 ls -i(inode) -R(récursivement) -a(caché) -t(ordre de dernière modification) -d(détail permission)
 drwxrwxrwx  2  root  sys  10650  Jan  30  16:12  execute
-d directory répertoire, - fichier, b, c fichier spécial, l lien symbolique
-3 fois rwx permission owner, group, user
-déplacement arborexence, création, visualiser un fichier
-2 le minimum de lien sur un fichier (lui-même et son père) (7 lien 5 sous répertoire+lui+père)
-root nom du propriétaire
-sys nom du groupe qu'il appartient
-10650 taille du fichier
-date
-execute nom du fichier
+---d directory répertoire, - fichier, b, c fichier spécial, l lien symbolique
+---3 fois rwx permission owner, group, user
+---déplacement arborescence, création, visualiser un fichier
+---2 le minimum de lien sur un fichier (lui-même et son père) (7 lien 5 sous répertoire+lui+père)
+---root nom du propriétaire
+---sys nom du groupe qu'il appartient
+---10650 taille du fichier
+---date
+---execute nom du fichier
 
-lister les disque dur
----------------------
+------------------------------------------------
+listeer et la taille d' fichier ou répertoire
+------------------------------------------------
+***lister les disque dur
 df
-savoir la taille de fichier ou répertoire
------------------------------------------
+
+***savoir la taille de fichier ou répertoire
 du -sh ./etc 
 
---------------------------------------------------------
-pwd  #où l'on se trouve ensuite cd.(répertoire de travail) ou cd..(retour)
+-------------------------------------------
+Ou on est ? ou on veut aller qui je suis ?
+-------------------------------------------
+pwd  	#où l'on se trouve ensuite cd.(répertoire de travail) ou cd..(retour)
+cd ~ 	#aller directement dans son répertoire home
+whoami	#qui je suis
+
+which   #permet de connaître le nom complet du fichier que vous voulez utiliser en cas d'homonyme.
+which more  => /bin/more
+
+whereis #permet de connaitre le (s) emplacements des exécutables des sources et de la documentation sur une commande.
+whereis finger #finger:  /usr/bin/finger   /usr/share/man/man1/finger.1.gz
+whereis more => more: /bin/more  /usr/share/man/ma1/more.1.gz
+Cela signifie que l'exécutable est /bin/more et la documentation est dans le fichier /usr/share/man/ma1/more.1.gz
 
 
-crée un fichier
----------------
+-------------------------------------------
+Fichier et Répertoire
+-------------------------------------------
+***crée un fichier
 touch nomFichier       #fichier vide
 cat> MonFichier        #fichier avec Bonjour mon fichier
 Bonjour mon fichier!
 
 cat>rep1(crée le fichier rep1)>rep2(crée ou écrase le fichier)>> concaténé donnée
   (CTRL+D) quit                                                  #crée un fichier rep1 et rep2
+
 Lisez le contenu de monFichier
 car monFichier
 more MonFichier
@@ -106,7 +96,7 @@ head –n nombre fichier  // affiche les n premières lignes d’un fichier
 tail nombre fichier  //affiche les n dernières lignes (-5) 5 dernières ligne et (+2) affiche à partir de la ligne 2
 Avec option –f permet de visualiser la fin d’un fichier tout en bénéficiant du rafraîchissement de l’affichage (pour visualiser un fichier trace ou log  la sortie de cette commande est : CTRL-C)
 
-Supprimer un fichier, répertoire
+***Supprimer un fichier, répertoire
 --------------------------------
 rm -rf  #supprime les descandants (récursif), sans confirmation
 rm -R
@@ -119,8 +109,8 @@ copie ou renommer fichier, répertoire
 -------------------------
 cp -r source cible #fichier distincts et référencés par leur inode
 
-création d'un lien vers un fichier
-----------------------------------
+création d'un lien symbolique vers un fichier
+---------------------------------------------
 ln -s nomFichierActuel  deuxièmeNomFichier #-s crée un lien symbolique
 
 déplace un fichier
@@ -136,6 +126,7 @@ chercher un fichier
 -------------------
 find ./ -name "long.txt"
 find ./ -type -name "*.py"
+find . -name '*.s' -print
 
 recherche le modèle donné non seulement dans un mais plusieurs fichiers
 ------------------------------------------------------------------------
@@ -173,6 +164,7 @@ rwx permission: u user, g group, o other , -a all (tous par défaut)
 chmod +x prog #-rwxrwxrwx
 chmod o-w prog #rwrrwxr-x
 chmod g=0 prog #rwxr-xr-x
+
 Les permission par défaut
 -------------------------
 lors de la création d'un fichier le noyau se base sur une valeur contenue dans une
@@ -195,10 +187,19 @@ Fichier créé avec    010  010  100 ((suppression des exécutions à 1)  -w-w-
 Voici les exemples conformes à la réalité
 umask 777 #aucune permission
 
+------------------------------------------------------------------------------------------------------------------------
 
 
+-------------------------------------------
+SHELL
+connaitre le shell utilisé
+-------------------------------------------
+sh (Bourne Shell)  csh (C Shell) tcsh (C Shell amélioré)  ksh (Korn Shell)
+bash (Bourne again shell)   zsh (Z Shell)
 
-
+cat /etc/shells   #les shells installés sur le système.
+echo $SHELL 	#shell en cours d'utilisation
+export		#afficher les variables d'environnement du terminal
 
 
 

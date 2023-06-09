@@ -1,0 +1,125 @@
+------------------------------------------------------------------------------------------------------
+-----------------------------------------------CMD RESEAU--------------------------------------
+------------------------------------------------------------------------------------------------------
+1>> ssh networkName@192.16.0.110   	#acces ssh
+
+2>> tracerout nameweb
+
+3>> netstat -tulpn   	#port en écoute ou pas
+4>> ss -tulpn            #équiv
+
+5>> sudo iptables -I INPUT -p tcp -m tcp --dport 80 -j ACCEPT  #parefeu
+
+6>> wget  https://raw.githubusercontent.com/criss/file.txt...  #télécharge
+7>> curl  https://raw.githubusercontent.com/criss/file.txt > thebible.coffee
+
+8>> ip -a @ip
+9>> ifconfig   (plus dispo sudo apt install net-tools)
+10>> ip address
+11>> ip address |  grep eth0 | grep inet  #affiche ce qu'on cherche et cascade pour la précision
+12>> ip address |  grep eth0 | grep inet | awk  '[print $2}' #affiche le 2iem mot
+
+------------------------------------------------------------------------------------------------------
+-----------------------------------------------DIAGNOSTIC RESEAU--------------------------------------
+------------------------------------------------------------------------------------------------------
+
+***************netstat**************
+Affiche les connexions réseau (entrantes et sortantes),
+les tables de routage et statistique d'interface réseau.
+netstat -an | grep 'LISTEN'  #affiche les service ip port des services en écoute
+netstat -l 			#affiche toutes les sockets d'écoute
+netstat -at #port tcp
+netstat -au #port udp
+netstat -l #ports en écoute
+
+***************tcpdump**************
+capture et affiche les paquets réseaux échangés par une ou plusieurs
+interfaces réseaux.
+tcpdump -i eth0 -nn -s0 -v port 443
+-i selectionnez l'interface
+-n resoud pas les noms d'hôte et encore n résoud pas les ports 
+pratique pour visualiser ip/port
+****tcpdump
+***Visualiser les connexions en temps réelle sur notre machine. (capture)
+>tcpdump -n -i eno1 host 172.16.0.91  #voir les connexion du client
+>tcpdump -n -i eno1  #connexion de tout
+>tcpdump -n -i eno1 port 1700
+
+***************tshark****************
+analyseur de réseau mieux que tcpdump
+tshark -D #affiche les interfaces
+tshark  -i 1 -w test_tshark.pcap
+file test_tshark.pcap
+wireshark test_tshark.pcap
+https://packetlife.net/media/library/13/Wireshark_Display_Filters.pdf
+
+tshark -f "udp port 53" -i 1
+nslookup kondath.com
+
+***************nmap****************
+nmap 172.16.0.25  #retourne les ports ouverts sur le serveur (scan 1000 port) fait depuis un client.
+nmap -p 22 -D RND:10 192.168.125.129  #scan avec des adresses différentes pour ne pas être détecté par le par feu
+nmap -O 192.168.125.129 #savoir le système d'exploitation.
+nmap -sV 192.168.125.129 #port + service + version (openssh/apache)
+
+le pc envoie ---SYN--> et le serveur renvoie RST,ACK (port fermé) ou SYN,ACK (port ouvert)
+
+------------------------------------------------------------------------------------------------------
+-----------------------------------------------PARE FEU-----------------------------------------------
+------------------------------------------------------------------------------------------------------
+iptables -L -n #verifier les paquets sortants dans le pare feu
+/etc/init.d/firewall stop  #désactive le pare-feu
+
+***Accepter tout sur iptable (tout faire passer).
+iptables -n -L
+iptables -X
+iptables -F
+
+
+------------------------------------------------------------------------------------------------------
+----------------------------------------------COMMANDES SPECIFIQUES ----------------------------------
+------------------------------------------------------------------------------------------------------
+***visualiser les log
+>>tail -f /var/log/lora.log  #visualise en continu [more|less]
+>>less /var/log/user.log
+
+***remettre à l’heure depuis un serveur de temps ntp
+>>date
+>>>/etc/init.d/ntpd stop
+>>ntpdate 130.79.14.177  #server de temps 
+>>>/etc/init.d/ntpd start
+
+***serveur proxy
+export http_proxy="http://@proxy:8080" 	#ajoute momentanément 
+unset  http_proxy="http://@proxy:8080" 	#supprime
+
+***variable d'environnement
+printenv 				#affiche les variables d'environnements
+#variable environnement permanent
+etc/environnement  ce n'est pas un fichier de script
+etc/profile        fichier de scirpt donc export
+Pour tous les shell bash et persistent
+nano ~/bashrc et ajouter export http_proxy="http://@proxy:8080"
+Pour l'utilisateur
+>>/home/user1/.profile et ajouter export http_proxy="http://@proxy:8080"
+
+------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------
+-----------------------------------------------MACHINE VIRTUELLE--------------------------------------
+------------------------------------------------------------------------------------------------------
+***Accès à une machine virtuel 192.168.122.150 serveur ngnix sur kvm,
+installée sur un pc 192.168.8.100 
+depuis le navigateur: http://192.168.8.100:8080
+
+iptables -I FORWARD -o virbt0 -p -d 192.168.122.150 --dport 80 -j ACCEPT
+iptables -t nat -I PREROUTING -p tcp -d 192.168.8.100 --dport 8080 -j DNAT --to 192.168.122.150:80
+
+***Accepter tout sur iptable (tout faire passer).
+iptables -n -L
+iptables -X
+iptables -F
+
+
+------------------------------------------------------------------------------------------------------

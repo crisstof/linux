@@ -1,0 +1,28 @@
+**********************************
+	vi - vim
+**********************************
+i : insérer du texte
+echap : retour en mode interactif
+k (haut) l (droite) j (bas)  h (gauche) : déplacement (flêche mode insertion)
+
+0 et $ : déplace début et fin de ligne
+w : se déplacer de mot en mot
+:w  : enregistrer  :wq  enregistre et quit
+
+opérations standards:
+x : effaces des lettres
+d : efface des mots, des lignes
+dd : supprimer une ligne
+dw : supprimer un mot
+yy :  copier une ligne en mémoire
+yw : copier un mot
+y$ : copier du curseur jusqu'à la fin de la ligne
+p  : coller
+r : remplacer une lettre rs (remplace par s)
+u : annule la modification
+G : 7G sauter à la ligne numéro x
+/recherche_le_mot : 
+:r autrefichier : fusion d'un fichier
+:sp  : découpe l'affichage si on veut permet de voir 2 endroits différents
+:vsp : couper en horizontale
+

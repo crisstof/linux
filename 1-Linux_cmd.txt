@@ -1,91 +1,6 @@
 *********************
-    LINUX                                 
+    LINUX CMD                                
 *********************
-Les fichiers linux
-/bin :commande de base presque toutes les commandes sont externes non intégrées au shell.
-/sbin :commands pour l’administration système
-/boot :informations nécessaire au démarrage 
-/dev : fichiers spéciaux des périphériques
-/etc : la plupart des fichiers de configuration
-/home :répertoires personnels utilisateurs
-/lib : contient les bibliothèques partagées (équivalent au dll)
-/sys :fichier system comme les id attention cela peut être fatale
-/run :information du système depuis son dernier démarrage service, utilisateurs actif…)
-/tmp :fichier temporaire
-/var :données fréquemment réécrites données variables et diverses
-/usr :logiciels installés avec le système
-/root :répertoire administrateur 
-/mnt :les répertoires utilisés pour monter temporairement un système de fichier (cd-rom…)
-/lost+found
-/opt :ici on installe les logiciels commerciaux
-/media :dossier périphérique
-/srv :données pour les services du système
-***********************************************************************************************
-Archiver (tar) et compresser (gzip)
-
-archiver (regrouper les fichiers)
-tar -cvf mon_archive.tar  mon_dossier/  
-ou
-tar -cvf archive.tar fic1 fic2 fic3
-
--c créer une archive tar
--v afficher le détail des opérations
--f assembler l'archive dans un fichier
-
-tar -tf archive.tar  #afficher le contenu de l'archive sans l'extraire
-tar -rvf archiv.tar  fichier_supplementaire #ajouter un fichier
-tar -xvf archiv.tar  #extraire les fichiers de l'archive -x extraire
-
-Compresser
-gzip archiv.tar #compresse
-gunzip archiv.tar #décompresse
-gzip fic1.tuto #compresse un fichier renommé fic1.tuto.gz
-
-Archiver et Compresser 
-tar -zcvf archiv.tar.gz  mon_dossier/  #compresse
-tar -zxvf archiv.tar.gz #décompresse
-
-
-
-**********************************
-	vi - vim
-**********************************
-i : insérer du texte
-echap : retour en mode interactif
-k (haut) l (droite) j (bas)  h (gauche) : déplacement (flêche mode insertion)
-
-0 et $ : déplace début et fin de ligne
-w : se déplacer de mot en mot
-:w  : enregistrer  :wq  enregistre et quit
-
-opérations standards:
-x : effaces des lettres
-d : efface des mots, des lignes
-dd : supprimer une ligne
-dw : supprimer un mot
-yy :  copier une ligne en mémoire
-yw : copier un mot
-y$ : copier du curseur jusqu'à la fin de la ligne
-p  : coller
-r : remplacer une lettre rs (remplace par s)
-u : annule la modification
-G : 7G sauter à la ligne numéro x
-/recherche_le_mot : 
-:r autrefichier : fusion d'un fichier
-:sp  : découpe l'affichage si on veut permet de voir 2 endroits différents
-:vsp : couper en horizontale
-
-
-
-**************************************************************************************
-linux online: http://bellard.org/jslinux/
-**************************************************************************************
-
-			COMMANDES LINUX
-                       *****************
-
-
-
 1>ssh networkName@192.16.0.110   	#acces ssh
 2>ls , ls -l , ls -al          	  	#affiche dossier et fichier
 3>pwd                           	#le chemin où l'on est
@@ -146,7 +61,7 @@ linux online: http://bellard.org/jslinux/
 36>ping nameserverweb
    ping  -c  5 nameweb
    ping -c 5 -s 500  nameweb
-37>tracerout nameweb
+
 38>netstat -tulpn   	#port en écoute ou pas
 39>ss -tulpn            #équiv
 40>sudo iptables -I INPUT -p tcp -m tcp --dport 80 -j ACCEPT  #parefeu
@@ -164,71 +79,15 @@ linux online: http://bellard.org/jslinux/
 51>history
 52>reboot   
 53>sudo shutdown -h now
+54>tree -d -L 2  #affiche l'arborescence complète des dossiers jusqu'au niveau 2.
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+**************************************************************************************
+linux online: http://bellard.org/jslinux/
+**************************************************************************************
 
 
 

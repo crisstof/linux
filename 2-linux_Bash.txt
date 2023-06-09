@@ -1,7 +1,7 @@
 *********************************************
     LINUX    Le SHELL et les environnements                             
 *********************************************
-Chaque utilisateur possède un Shell dan sle fihcier /etc/passwd
+Chaque utilisateur possède un Shell dans le fihcier /etc/passwd
 Pour éviter des commandes sur une ligne et le Enter on a '\'
 Commentaire #
 man bash
@@ -77,7 +77,7 @@ Sortie prématurée se fait par la commande exit [n]  //n est le code retour ou 
 Exit 1 //code retour 1
 Deux commandes utiles:
 ---------------------
-which   #permet de connaître le nom complet du fichier que vous voulez utliser en cas d'homonyme.
+which   #permet de connaître le nom complet du fichier que vous voulez utiliser en cas d'homonyme.
 which more  => /bin/more
 whereis #permet de connaitre le (s) emplacements des exécutables des sources et de la documentation sur une commande.
 whereis more => more: /bin/more  /usr/share/man/ma1/more.1.gz
@@ -87,84 +87,6 @@ Cela signifie que l'exécutable est /bin/more et la documentation est dans le fi
 
 
 
-
-
-**************************************************************************************
-**********************************
-	vi - vim
-**********************************
-i : insérer du texte
-echap : retour en mode interactif
-k (haut) l (droite) j (bas)  h (gauche) : déplacement (flêche mode insertion)
-
-0 et $ : déplace début et fin de ligne
-w : se déplacer de mot en mot
-:w  : enregistrer  :wq  enregistre et quit
-
-opérations standards:
-x : effaces des lettres
-d : efface des mots, des lignes
-dd : supprimer une ligne
-dw : supprimer un mot
-yy :  copier une ligne en mémoire
-yw : copier un mot
-y$ : copier du curseur jusqu'à la fin de la ligne
-p  : coller
-r : remplacer une lettre rs (remplace par s)
-u : annule la modification
-G : 7G sauter à la ligne numéro x
-/recherche_le_mot : 
-:r autrefichier : fusion d'un fichier
-:sp  : découpe l'affichage si on veut permet de voir 2 endroits différents
-:vsp : couper en horizontale
-
-
-
-**********************************
-	Système de fichier Unix
-**********************************
-nfs  network file system
-jfs  journalized file system
-hfs+ système de fichier Mac OS X
-ext2 système de fichier de linux
-ext3 amélioration du format ext2
-vfat système de fichier FAT 32
-proc visualisation et manipulation des processus
-fd   descripteurs de fichier (/dev/fd)
-
-La liste des sytèmes de fichiers supportés par l'os:
-/proc/filesystems et la commande fsck permet de vérifier et de réparer les système
-de fichiers endommagés (cohérence entre fichiers présents et tables des inodes références vers les blocs de données...)
- 
-Sous UNIX tout est fichier: certains sont virtuels et ne correspondent à aucune partition.
-ils servent de réprésentation logique à un aspect donné du système.
-ils n'occupent aucune place sur le disque, et sont émulés dynamiquement à chaque accès par le noyau du système d'exploitation.
-
-- proc processus actifs et leurs propriétés (arguments, répertoire de travail...) sous formes de fichiers.
-- fd permet d'accéder aux descripteurs de fichiers pour simplifier la programmation car à l'intérieur des programmes ces descripteurs sont vus comme des fichiers.
-
-Les inodes
------------
-	Tout fichier est avant tout stocké sous la forme d'un noeud d'index, ou inode, contenant l'ensemble des métainformations associées aux fichiers.
-Ce noeud d'index comprend plusieurs pointeurs vers les zones du disque dur contenant le contenu du fichier sous forme de séquences de secteur linéaires: Si ces zones ne sont pas contigües, on parlera de fragmentation.
-	Le noeud d'index ne contient pas le nom du fichier, mais un entier permettant de l'identifier de manière unique: plusieurs noms peuvent représenter des liens vers un même fichier comme les liens symboliques.
-
-Les fichiers liens
-------------------
-il est possible d’avoir plusieurs noms dans différents répertoires pour un même fichier : 
-Ces noms sont des identificateurs du fichier et ont le même numéro d’inode. 
-Cette relation entre un numéro d’inode et un identificateur s’appelle un lien.
-Tout fichier possède au minimum un lien. 
-Lorsque le lien est établi dans le même système de fichiers le lien est dit simple 
-(les droits sont les mêmes, fichiers et lien car c’est le même objet). 
-Par contre un lien symbolique peut être mis dans un autre système de fichiers que le fichier d’origine : c’est un pointeur vers l’autre fichier, ses permissions seront indépendantes du fichier source.
-
-Les fichiers spéciaux
----------------------
-(b,c) associe un nom de fichier à un périphérique ou une communication clavier écran imprimante et sont stocké dans le répertoire /dev possèdent un inode mais pas de bloc de données et sont gérés par des interfaces d’accès à la ressource physique différents selon leur type.
-ls -l /dev   #liste 2 imprimantes /major(driver)/mineur(imprimante)
-crw--w---- 1 root lp1  6,1  .....
-crw--w---- 1 root lp1  6,2  .....
 
 
 
