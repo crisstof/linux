@@ -82,13 +82,115 @@ which more  => /bin/more
 whereis #permet de connaitre le (s) emplacements des exécutables des sources et de la documentation sur une commande.
 whereis more => more: /bin/more  /usr/share/man/ma1/more.1.gz
 Cela signifie que l'exécutable est /bin/more et la documentation est dans le fichier /usr/share/man/ma1/more.1.gz
+----------------------------------------------------------------------------------------------
+Modifier vos flux de données dans un fichier à travers un script bash avec SED Stream Editor.
+SED [Options(s)] 'Commande(s)'  [Fichier(s)]
+---
+Options:
+-e Indique l'utilisation d'un ou plusieurs scripts SED 	(plus important:  dès lors que plusieurs 
+                                             commandes sont intégrées en même temps à la commande SED,)
+-f Indique que le script est extrait d’un fichier.	(plus important)
+-n Indique que les résultats ne sont pas restitués	(sinon les lignes du fichier texte en cours de 
+                                             lecture s'affichent dans le terminal non utile surtout pour les BD)
+-i Indique la création d’un fichier temporaire destiné à remplacer le fichier d’origine.
+-u Indique qu’aucun tampon de données n’est utilisé.
+-s Indique que plusieurs fichiers sont traités séparément plutôt que considérés comme un long flux de 
+   données.
+-r Indique que la commande accepte les expressions régulières étendues.
+Commandes: entouré par guillemets simples évite à la saisie d'être réinterprétée éliminent des sources d'erreur.
+a append : ajoute une ou plusieurs autres lignes aux lignes déjà sélectionnées.
+c change : modifie les lignes sélectionnées à l’aide de nouveaux contenus.
+d delete : supprime les lignes sélectionnées.
+g get : copie le contenu de l’espace de stockage dans l’espace de travail.
+G GetNewline : ajoute le contenu de l’espace de stockage à l’espace de travail.
+h hold : copie le contenu de l’espace de travail dans l’espace de stockage.
+H HoldNewLine : ajoute le contenu de l’espace de travail à l’espace de stockage.
+i insert : insère une ou plusieurs lignes avant les lignes sélectionnées.
+l listing : affiche l’ensemble des caractères non imprimables.
+n next : passe à la commande suivante sur une nouvelle ligne de commande.
+p print : affiche les lignes sélectionnées.
+q quit : quitte la commande SED de Linux.
+r read : lit toutes les lignes sélectionnées d’un fichier.
+s substitute : remplace une chaîne de caractères spécifiée par une autre.
+x xchange : intervertit l’espace de travail (mémoire vive court terme connde de fonctionnement à l'instant t) et l’espace de stockage (données peuvent être appelées même si la commande sed est déjà occupée par ailleurs).
+y yank : remplace un caractère spécifié par un autre
+w write : écrit des lignes dans un fichier texte.
+! Negation : applique la commande aux lignes ne correspondant pas à la saisie.
+
+Les commandes est enrichies par différentes options:
+= Indique le numéro de ligne des lignes sélectionnées.
+p Affiche les lignes modifiées.
+q Applique la commande à l’intégralité du fichier.
+
+
+Expressions régulières
+[ABC] classe de caractères, pour rechercher une correspondance à partir d'un groupe de lettres, chiffres, symboles: soit A, soit B, soit C.
+(ABC) Un groupe de caractères correspond à un ternme fixe ici ABC dans cet ordre.
+caratères génériques:
+. :le point remplace exactement un caractère
+* :l'astérisque remplace n'importe quel nombre de caractère.
+fréquence des combinaisons:
+? :point d'intérrogation un terme peut apparaître une fois ou pas du tout.
++ :le plus le caractère concerné peut apparaître plusieurs fois (mais au minimum une fois)
+{0,n} :accolade spécifie la fréquence à laquelle une combinaison de caractère peut apparaître en saisissant 2 valeurs séparées par une virgule, vous déterminez le minimum et le maximum de répétitions possibles.
+Ajouter des caractères logiques: aide à imbriquer des requêtes ou a les relier entre elles
+| :pipe sépare 2 termes et représente une alternative entre les deux.
+^ :accent circonflexe avent un terme permet d'ignorer ce dernier: cette chaîne de caractères ne doit pas apparaître.
+
+Adresse
+Une adresse est donc considérée comme la cible de votre commande. Vous disposez de différentes possibilités pour spécifier celle-ci. Dans bon nombre de situations, vous pouvez introduire des requêtes améliorées à l’aide d’expressions régulières. Mais, par exemple, vous pouvez aussi sélectionner des lignes directement dans le fichier texte. Il vous suffit ensuite de renseigner les différentes adresses en conséquence.
+sed -n '10,50p' text.txt  		#ligne spécifiques transmet les lignes 10 à 50 au terminal.
+#si on est pas en mesure d'identifier précisement les lignes qui contiennent les informations avec lesquelles vous voulez travailler on effectue une recherche à partir de l'adresse (essentiel que vos expressions soient toujours entourées par des barres obliques sépare le véritable terme de recherche réel d'autres information comme les commandes
+sed -n 'exemple.[1-9]/p'  text.txt	#indique toutes les lignes considérées comme un ou des exemples et suivies par un chiffre.
+
+Exemples
+Recherchez une bouteille de Chardonnay dans votre grande cave à vin et que vous souhaitez, en outre, afficher la première ligne de la base de données expliquant la répartition en colonnes de celle-ci. 
+sed -n -e ’1p’ -e ’/Chardonnay/p’ vin.txt  #utilisation de 2 commandes l'une après l'autre
+Résultat:
+Étagère Région de culture Cépage Millésime
+1 Rhénanie-Palatinat Chardonnay 2001
+2 Moselle Chardonnay 1983
+3 Alsace Chardonnay 1981
+
+Si vous souhaitez uniquement afficher les bouteilles datant des années 1980,
+sed -n -e ’1p’ -e ’/Chardonnay * 198./p’ vin.txt
+Résultat:
+Regal Anbaugebiet Rebsorte Jahrgang
+2 Moselle Chardonnay 1983
+3 Alsace Chardonnay 1981
+En principe, le caractère générique séparant le cépage du millésime n’est pas important pour cet exemple. Cependant, si votre base de données est erronée ou si vous décidez après coup d’y ajouter une colonne, ce caractère garantit l’exactitude de ces informations.
+
+Ajouter une nouvelle ligne à la fin de votre fichier texte.
+sed -i -e ’$a2 Moselle Dornfelder 2010’ -e ’$a4 Alsace Pinot Gris 2011’ vin.txt
+$ permet de passer d'abord à cette dernière ligne et entraine l'ajout d'une nouvelle ligne avec le contenu qui s'ensuit on peut aussi -i pour modifier directement le fichier d'origine ou choisir de créer une nouvelle base de données.
+
+ les différentes colonnes de votre fichier étaient séparées les unes des autres à l’aide d’un espace et maintenant vous voulez un tiret:
+sed -i -e ’s/[[:space:]]/-/g’ vin.txt   #le g garantit l’application de la commande à l’intégralité du fichier
+
+-----------------------------------------------------------------------------------------------------
+{
+    "SX1301_conf": {
+        "lorawan_public": true,
+        "clksrc": 0,
+----------------------------------------------------------------------------------------------------- 
+ SED [Options(s)] 'Commande(s)'  [Fichier(s)]
+  
+ remplacer un true par false dans un fichier ligne 3:
+ sed  -i  's/public": true/public": false/' /var/config/lora-packet-forwarder-ap1/global_conf.json
+
+ sed [-i] '                               ' [/var/config/lora-packet-forwarder-ap1/global_conf.json]
+ -i Indique la création d’un fichier temporaire destiné à remplacer le fichier d’origine.
+ / si on est pas en mesure d'identifier précisement les lignes qui contiennent les informations avec lesquelles vous voulez travailler on effectue une recherche à partir de l'adresse.
+(essentiel que vos expressions soient toujours entourées par des barres obliques, sépare le véritable terme de recherche réel avec d'autres information comme les commandes
+ s substitute : remplace une chaîne de caractères spécifiée par une autre
+/public": true/public": false  replace true par false
+
+Alternative de SED peut être trop fastidieux:
+AWK permet des options supplémentaire prises en charge par des langages de programmation plus complexes, vous pouvez compiler des commandes comportant des instructions <<if...  else>> ou <<do... while>> mais plutôt pour le langage C.
 
 
 
 
-
-
-
-
+--------------------------------------------------------------------------------------------------------
 
 
