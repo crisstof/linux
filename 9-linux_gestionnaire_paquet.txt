@@ -1,0 +1,328 @@
+Utilistaire dpkg:
+Dpkg est utilisé pour installer, supprimer et fournir des informations à propos des paquets *.deb qui sont supportés par les distributions basées Debian.
+
+Outil de bas niveau, dpkg -i / dpkg -r permettent d’installer ou de désinstaller des fichiers .deb. Pour ces tâches, on préfère utiliser des outils plus avancés comme aptitude ou apt-get, apt-cache.
+
+dpkg
+----
+dpkg -l  #liste les paquets installés
+dpkg -s wget #vérifier qu'un paquet soit installé
+dpkg -L wget #pour lister les fichiers installés par un paquet
+
+rpm   : est l'autre système de base avec les droits de l'utilisateur root
+----
+rpm  -ivh  fichier.rpm  #installer un paquet
+-Uvh #mettre à jour un paquet
+-evv #désinstaller un paquet
+rpm -qa #liste les paquets installés
+rpm -q wget #cérifier qu'un paquet est installé
+rpm -ql wget #lister les fichiers d'un paquet installé
+rpm -qi wget #obtenir toutes les informations concernant un paquet installé
+
+
+
+apt-get  :gère les source la plupart du temps déjà compilés (apt ou yum)
+-------
+Les sources où apt va chercher les paquet sont définies dans le fichier  /etc/apt/sources.list
+
+apt list --installed   	#affiche les paquets installés
+apt list 		#paquet disponible sur ubuntu linux
+apt list | grep nginx
+apt search wget
+apt-cache show wget
+apt-cache showpkg wget
+dpkg --list  |  grep nginx  #évite l'avertissement apt inteface non stable
+apt list -a mariadb-server  #savoir si un package est installé ou non
+dpkg --list 'x*'   #liste les package d'un modèle donné
+apt list --upgradeable
+Liste les package installés triés par date et heure d'installation
+ echo  "Total des packages installés sur ${HOSTNAME} :| \
+   (zgrep " installé " /var/log/dpkg.log* | wc -l)"
+Listez-les:
+ zgrep " installed " /var/log/dpkg.log*
+apt dist-upgrade  #Mettre à jour tous les paquets installés vers les dernières versions en installant de nouveaux paquets si nécessaire 
+apt remove wget #Retirer le paquets sans les configurations
+apt autoremove wget #Retirer le paquets sans les dépendances
+apt purge wget #Retirer totalement un paquet
+apt autoremove --purge wget #combinaison
+apt clean # TABLE DES MATIÈRES
+1. GESTIONNAIRE DE PAQUETS
+1.1. GESTIONNAIRE DE PAQUETS
+1.2. UTILITÉ
+1.3. NOMENCLATURE DES SYSTÈMES DE PAQUETS
+1.4. UTILITAIRE DPKG
+1.5. UTILITAIRE RPM
+2. DÉPÔT DE PAQUETS
+2.1. PRINCIPE DE FONCTIONNEMENT
+2.2. APT
+2.3. YUM / DNF
+2.4. AUTRES LOGICIEL DE GESTION DES PAQUETS
+3. MAINTENANCE ET MISES À JOUR
+3.1. MAINTENANCE DES MISES À JOUR D’UN SYSTÈME DEBIAN
+3.2. MISE À JOUR D’UNE DISTRIBUTION DEBIAN DEPUIS UNE ANCIENNE VERSION
+4. COMPARATIF DES GESTIONNAIRES DE PAQUETS PAR DISTRIBUTION
+4.1. DEBIAN/UBUNTU C. FEDORA/RHEL/SL/CENTOS
+4.2. ALPINE LINUX C. ARCH LINUX C. GENTOO
+4.3. OPENWRT
+5. METTRE À JOUR LE NOYAU
+5.1. PROCÉDURE RHEL
+5.2. PROCÉDURE UBUNTU
+Paquets Linux
+Ce chapitre est consacré à la gestion des paquets de logiciels sous Linux. On y verra la manipulation courante des utilitaires de base comme dpkg ou rpm mais aussi des gestionnaires de dépôt comme apt ou yum. On élargira cette vue avec d’autres outils comme opkg, pacman, emerge ou encore apk.
+
+1. Gestionnaire de paquets
+1.1. Gestionnaire de paquets
+Un gestionnaire de paquets est un (ou plusieurs) outil(s) automatisant le processus d’installation, désinstallation, mise à jour de logiciels installés sur un système informatique.
+
+Un paquet est une archive comprenant les fichiers informatiques, les informations et procédures nécessaires à l’installation d’un logiciel sur un système d’exploitation, en s’assurant de la cohérence fonctionnelle du système ainsi modifié.
+
+1.2. Utilité
+Le gestionnaire de paquets permet d’effectuer différentes opérations sur les paquets disponibles :
+
+Installation, mise à jour, et désinstallation ;
+Utilisation des paquets provenant de supports variés (CD d’installation, dépôts sur internet, partage réseau …) ;
+Vérification des sommes de contrôle de chaque paquet récupéré pour en vérifier l’intégrité ;
+Vérification des dépendances logicielles afin d’obtenir une version fonctionnelle d’un paquetage
+1.3. Nomenclature des systèmes de paquets
+On trouve deux grands types de système de paquets selon les grandes familles de distributions Linux :
+
+RPM : Redhat Enterprise Linux, Fedora, Centos, …
+DPKG: Debian, Ubuntu, Mint, Raspbian, …
+D’autres systèmes méritent l’intérêt :
+
+Portage/emerge : Gentoo
+Pacman : Archlinux
+opkg : OpenWRT
+1.4. Utilitaire dpkg
+Dpkg est utilisé pour installer, supprimer et fournir des informations à propos des paquets *.deb qui sont supportés par les distributions basées Debian.
+
+Outil de bas niveau, dpkg -i / dpkg -r permettent d’installer ou de désinstaller des fichiers .deb. Pour ces tâches, on préfère utiliser des outils plus avancés comme aptitude ou apt-get, apt-cache.
+
+Commandes utiles dpkg
+Pour lister tous les paquets installés avec des droits priviliégés :
+
+dpkg -l
+ou
+
+dpkg --get-selections
+Pour vérifier qu’un paquet soit installé :
+
+dpkg -s wget
+Pour lister les fichiers installés par un paquet :
+
+dpkg -L wget
+Pour reconfigurer un paquet installé :
+
+dpkg-reconfigure locales
+Plus de détails sur dpkg
+Le Manuel de l’administrateur debian, chapitre 5 “Système de paquetage, outils et principes fondamentaux” offre des détails et des exemples à titre d’exercice sur le sujet :
+
+5.1. Structure d’un paquet binaire
+5.2. Méta-informations d’un paquet
+5.2.1. Description : fichier control
+5.2.2. Scripts de configuration
+5.2.3. Sommes de contrôle, liste des fichiers de configuration
+5.3. Structure d’un paquet source
+5.3.1. Format
+5.3.2. Utilité chez Debian
+5.4. Manipuler des paquets avec dpkg
+5.4.1. Installation de paquets
+5.4.2. Suppression de paquets
+5.4.3. Consulter la base de données de dpkg et inspecter des fichiers .deb
+5.4.4. Journal de dpkg
+5.4.5. Support multi-architecture
+5.5. Cohabitation avec d’autres systèmes de paquetages
+ En téléchargeant les livres du Guide Linux vous encouragez son auteur ! Linux Administration Complet
+1.5. Utilitaire rpm
+RPM est l’autre système de base. Il permet d’installer, mettre à jour, désinstaller, vérifier et rechercher des paquets, avec les droits de l’utilisateur root.
+
+Pour Installer un paquet :
+
+rpm -ivh fichier.rpm
+Pour mettre à jour un paquet
+
+rpm -Uvh fichier.rpm
+Pour désinstaller un paquet :
+
+rpm -evv fichier.rpm
+Vérifier la signature d’un paquet :
+
+rpm --checksig fichier.rpm
+Commande rpm -q
+Lister tous les paquets installés :
+
+rpm -qa
+Vérifier qu’un paquet est installé :
+
+rpm -q wget
+Lister les fichiers d’un paquet installé :
+
+rpm -ql wget
+Obtenir toutes les informations concernant un paquet installé :
+
+rpm -qi wget
+Obtenir toutes les informations concernant un paquet avant le l’installer :
+
+rpm -qip fichier.rpm
+ En téléchargeant les livres du Guide Linux vous encouragez son auteur ! Linux Administration Complet
+2. Dépôt de paquets
+Un gestionnaire de paquet avancé comme apt ou yum gère des sources de logiciels (la plupart du temps déjà compilés) et leur authenticité.
+
+Le lieu où sont placés ses sources est appelé dépôt de paquet. Cette source est la plupart du temps une source locale comme un CD ou un DVD, un serveur Internet HTTP/FTP ou encore un miroir de dépôt local.
+
+La définition d’un dépôt de paquets dépend outre de la source elle-même de la distribution, de l’architecture matérielle, des sources officielles ou autres.
+
+Certains concepteurs de logiciels fabriquement eux-mêmes les binaires d’installation pour les distributions et hébergent leurs propres dépôts de paquets.
+
+2.1. Principe de fonctionnement
+Principe de fonctionnement d’un gestionnaire de paquet avancé :
+
+Les logiciels disponibles sont contenus dans une liste qui doit être à jour afin d’assurer la cohérence de l’ensemble du système.
+Au moment de la demande d’installation, cette liste est consultée pour prendre les fichiers nécessaires.
+Le système de paquetage décompresse et place les différents fichiers binaires, de configuration et de documentation aux endroits appropriés. Éventuellement, un dialogue de configuration intervient.
+Éventuellement, le système de paquetage installe automatiquement un service et le démarre.
+Tâches
+Vérification de l’existence d’un paquet
+Version du logiciel dans le paquet
+Fichiers de configuration
+Source
+Fichiers de configuration /etc
+Désinstallation
+Purge des fichiers
+Suppression des dépendances orphelines
+2.2. APT
+APT simplifie l’installation, la mise à jour et la désinstallation de logiciels en automatisant la récupération de paquets à partir de sources APT (sur Internet, le réseau local, des CD-ROM, etc.), la gestion des dépendances et parfois la compilation.
+
+Lorsque des paquets sont installés, mis à jour ou enlevés, les programmes de gestion de paquets peuvent afficher les dépendances des paquets, demander à l’administrateur si des paquets recommandés ou suggérés par des paquets nouvellement installés devraient aussi être installés, et résoudre les dépendances automatiquement. Les programmes de gestion de paquets peuvent aussi mettre à jour tous les paquets.
+
+APT est essentiellement une bibliothèque C++ de fonctions utilisées par plusieurs programmes de gestion de paquets. Un de ces programmes est apt, probablement le plus connu et celui recommandé officiellement par le projet Debian. aptitude est également populaire et propose des fonctionnalités étendues par rapport à apt-get. Aujourd’hui, apt est une commande qui se suffit à elle-même pour la plupart des opérations concernant les paquets Debian/Ubuntu.
+
+Sources APT
+Les sources à partir desquelles apt va chercher les paquets sont définies dans le fichier /etc/apt/sources.list
+
+Par exemple sur une machine Debian 7 Wheezy :
+
+cat /etc/apt/sources.list
+deb https://http.debian.net/debian wheezy main
+deb https://http.debian.net/debian wheezy-updates main
+deb https://security.debian.org wheezy/updates main
+La section main comprend l’ensemble des paquets qui se conforment aux DFSG - Directives Debian pour le logiciel libre et qui n’ont pas besoin de programmes en dehors de ce périmètre pour fonctionner. Ce sont les seuls paquets considérés comme faisant partie de la distribution Debian.
+
+La section contrib comprend l’ensemble des paquets qui se conforment aux DFSG, mais qui ont des dépendances en dehors de main (qui peuvent être empaquetées pour Debian dans non-free).
+
+La section non-free contient des logiciels qui ne se conforment pas aux DFSG.
+
+Par exemple sur une machine Ubuntu 16.04 Xenial :
+
+cat /etc/apt/sources.list
+deb https://archive.ubuntu.com/ubuntu xenial main universe
+deb https://archive.ubuntu.com/ubuntu xenial-updates main universe
+deb https://archive.ubuntu.com/ubuntu xenial-security main universe
+Ubuntu maintient officiellement les paquets main (logiciels libres) et restricted (logiciels non-libres).
+
+La communauté Ubuntu fournit les paquets universe (libres) et multiverse (non-libres).
+
+On prendra l’habitude de mettre à jour la liste de paquetages avec :
+
+apt-get update
+Recherche APT
+Recherche dans les descriptions de paquets :
+
+apt-cache search wget
+Mais apt search fonctionne aussi :
+
+apt search wget
+Voir les informations d’un paquet :
+
+apt-cache show wget
+Vérifier les dépendances d’un paquet :
+
+apt-cache showpkg wget
+ En téléchargeant les livres du Guide Linux vous encouragez son auteur ! Linux Administration Complet
+Mise à jour et installation avec APT
+Mettre à jour tous les paquets sans ajout de nouveaux paquets :
+
+apt-get update && apt-get upgrade
+ou :
+apt update && apt upgrade
+
+Mettre à jour tous les paquets installés vers les dernières versions en installant de nouveaux paquets si nécessaire :
+apt dist-upgrade
+
+Installation ou mise-à-jour d’un paquet :
+apt install wget
+
+Installation sans dialogue :
+apt -y install wget
+
+Désinstallation de paquets APT
+Retirer le paquets sans les configurations :
+apt remove wget
+
+Retirer le paquets sans les dépendances :
+apt autoremove wget
+
+Retirer totalement un paquet :
+apt purge wget
+On peut combiner les deux :
+apt autoremove --purge wget
+
+Retire les dépendances non nécessaires :
+apt autoremove
+Suppression des fichiers mis en cache dans var/cache/apt/archives 
+apt clean
+
+Réinstaller un paquet
+apt --reinstall install postfix #Réinstaller un paquet 
+
+Debian/Ubuntu c. Fedora/RHEL/SL/Centos
+Action						Debian/Ubuntu				Fedora/RHEL/SL/Centos
+1. Mise à jour de la liste des paquets		apt-get update				yum update, yum check-update
+2. Affichage des mises-à-jour disponibles	apt-get upgrade --simulate		yum list updates
+3. Installation de paquets spécifiques		apt-get install package1 package2	yum install package1 package2
+4. Réinstallation d’un paquet			apt-get install --reinstall package	yum reinstall package
+5. Mise à jour d’un paquet			apt-get upgrade package1 package2	yum update package
+6. Mise à jour du système			apt-get upgrade, apt-get dist-upgrade, apt upgrade, apt full-upgrade	yum upgrade
+7. Recherche de paquets	apt-cache search searchword, apt-cache search --full --names-only searchword	yum search searchword
+8. Liste de paquets installés	dpkg -l, apt list --installed	rpm -qa
+9. Information sur un paquet	apt-cache show package, apt show package, dpkg -s package	yum info package, yum list package, yum deplist package
+10. Désinstaller des paquets	apt-get remove --purge package1 package2, apt-get autoremove	yum remove package1 package2
+11. Téléchargement de paquets sans installation	apt-get install --download-only package1 package2	yum install --downloadonly --downloaddir=<directory> <package>
+12. Effacement des paquets téléchargés	apt-get clean, apt-get clean (paquets dépassés)	yum clean all
+13. Configuration des dépôts	/etc/apt/sources.list	/etc/yum.repos.d/
+
+
+
+
+Un autre logiciel de gestion des paquets: Ppkg pour par exemple openwrt ...
+
+
+Action	OpenWRT
+1. Mise à jour de la liste des paquets	opkg update
+2. Affichage des mises-à-jour disponibles	opkg list-upgradable
+3. Installation de paquets spécifiques	opkg install <pkgs ou FQDN>
+4. Réinstallation d’un paquet	opkg install --force-reinstall <pkgs>
+5. Mise à jour d’un paquet	opkg upgrade <pkgs> (non recommandé)
+6. Mise à jour du système	-
+7. Recherche de paquets	opkg list [pkg ou globp], opkg search <file ou globp>
+8. Liste de paquets installés	opkg list-installed
+9. Information sur un paquet	opkg info [pkg ou globp], opkg status [pkg ou globp]
+10. Désinstaller des paquets	opkg remove <pkgs ou globp>
+11. Téléchargement de paquets sans installation	opkg --download-only download <pkg>
+12. Effacement des paquets téléchargés	option --force-removal-of-dependent-packages
+13. Configuration des dépôts	/etc/opkg.conf
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
