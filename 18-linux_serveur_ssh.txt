@@ -1,0 +1,41 @@
+--------SSH---------------------------------------------------------------------
+pour le ssh
+https://aymeric-cucherousset.fr/se-connecter-en-ssh-sur-debian-11/
+cat /etc/passwd
+cut -d: -f /etc/passwd|wc -l  compte les utilisateurs
+config du ssh
+systemctl ssh status  (active)
+/etc/ssh/sshd_config    PermitRootLogin yes
+systemctl restart ssh
+root@172.16.0.109      password: root
+
+Activer l'authentification par clé publique:
+/etc/ssh/sshd_config      PubkeyAuthentication yes    et redémarrer: systemctl restart ssh
+Générer la clés public depuis la machine qui va se connecter sur le serveur:
+La commande va vous demander si vous souhaitez renommer le fichier qui contiendra la clé, mais c’est facultatif.
+Elle va aussi vous demander si vous souhaitez ajouter une passphrase qui est également facultative.
+>ssh-keygen -t rsa
+Envoie de la paire de clé sur le serveur:
+>ssh-copy-id utilisateur@ip-serveur
+il est possible maintenant de se connecter sans mot de passe.
+
+
+Transferer des fichiers avec SSH
+Le SFTP est plus interactif (ex: possibilité de créer/supprimer des dossiers …) que SCP.
+SFTP  
+(ou filezilla ou remmina)
+sftp utilisateur@ip-serveur
+commandes:
+ls : afficher les dossiers/fichiers
+mkdir : creer un dossier
+cd : se rendre dans un dossier ("cd .." pour remonter d'un dossier) 
+pwd : afficher l'emplacement
+get : télécharger un fichier 
+put : envoyer un fichier 
+exit : Quitter la connexion SFTP
+
+SCP (Ne pas créer sur le pc le dossier sinon il sera créé 2 deux fois)
+scp emplacement-local utilisateur@ip-serveur:emplacement-serveur
+scp -r .\payloadcodecs\ root@172.16.0.109:.\script\payloadcodecs\    (-r recursive tout copier)
+scp -r .\paho\ root@172.16.0.109:script\paho\
+
