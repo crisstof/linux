@@ -1,0 +1,323 @@
+**************************************************************FTP**********************************************************************************
+------------Transfert de fichier----------------------------------------
+SCP
+SCP (Ne pas créer sur le pc le dossier sinon il sera créé 2 deux fois)
+scp emplacement-local utilisateur@ip-serveur:emplacement-serveur
+scp -r .\payloadcodecs\ root@172.16.0.109:.\script\payloadcodecs\    (-r recursive tout copier)
+scp -r .\paho\ root@172.16.0.109:script\paho\
+
+FTP ou SFTP
+client filezilla
+serveur FTP installation:
+ProFtpd Modulaire et paramétrable à souhaits. (https://www.ionos.fr/digitalguide/serveur/configuration/configurer-un-serveur-ftp-sous-debian-avec-proftpd/)
+PureFTPd quelques utilisateurs simple et sécurisé
+vsftpd pour faire tourner un serveur FTP avec beaucoup d'utilisateur (https://infoloup.no-ip.org/ftps-vsftpd-debian12/)
+
+ProFtpd
+> apt install proftpd
+Décider de l'utiliser en ProFTDP en mode serveur (standalone) ou service controlé par inetd.
+Dans le premier cas il se charge lui-même des requêtes entrantes et dans le deuxième Superserveur inetd/xinetd reçoit les requêtes et les transmet au serveur FTP (pour très peut de trafic).
+Pendant l'installation  
+ajout de l'utilisateur proftpd (UID 117) avec le groupe nogroup.
+ajout de l'utilisateur système ftp (UID 118)
+création du répertoire personnel  /srv/ftp
+'/usr/share/proftpd/templates/welcome.msg'  -> '/srv/ftp/welcome.msg.proftpd-new'
+server configured as standalone.
+Created symlink /etc/systemd/system/multi-user.target.wants/proftpd.service → /lib/systemd/system/proftpd.service.
+ 
+CONFIGURATION DE BASE
+Configurer le fichier /etc/proftdp/proftpd.conf 
+nous pouvons faire notre propre fichier dans /etc/proftpd/conf.d/ ablegen  ce répertoire n'est pas affecté par les mises à jour.
+Les spécifications du serveur stockées dans le dossier conf.d peuvent être incluse dans e fichier principal avec la directive include par défaut.
+
+ServerName "Chirpstack"
+-------------------------------------------------------------------------------------------------------------------------------------------------
+autre configuration:
+# Message de connexion
+DisplayLogin "Bienvenue sur le FTP de moi"
+
+# Désactiver IPv6
+UseIPv6 off
+
+# Chaque utilisateur accède seulement à son home (pour les membres du groupe ftp2100)
+DefaultRoot ~ ftp2100
+
+# Port (défaut = 21)
+Port 2100
+
+# Refuser la connexion super-utilisateur "root"
+RootLogin off
+
+# Nombre de clients FTP max.
+MaxClients 2
+
+# Autoriser la connexion seulement aux membres du groupe "ftp2100" grâce à la directive DenyGroup.
+# En précisant "!" on refuse tout sauf le groupe "ftp2100"
+<Limit LOGIN>
+DenyGroup !ftp2100
+</Limit>
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+Recharger ProFTPd
+>systemctl reload proftpd
+
+Créer un utilisateur FTP
+Le fichier /etc/shells référence les Shell système, on va créer un faux shell (car il pointe vers un binaire qui n'existe pas) en indiquant,
+toujours définir /bin/false comme interface système Shell de connexion pour assurer qu'il ne peut que accéder au serveur FTP et non à l'ensemble du système.
+avec /bin/false pour l'attribuer ensuite à notre utilisateur FTP l'intéret c'est que l'utilisateur ne pourra pas se connecter au shell sur le serveur il peut seulement utiliser FTP sinon 
+il pourra se conecter en ssh (pb sécurité)
+pour entrer /bin/false dans le fichier des interfaces système Shells autorisées:
+> sudo echo "/bin/false" >> /etc/shells   #si on ouvre le fichier on verra donc /bin/false avec le reste comme /bin/sh
+ensuite nous pouvons créer un premier utlisateur et son répertoire d'origine et attribuer un mot de passe:
+sudo adduser user1 --shell /bin/false  --home  /home/user1
+
+ou pas à pas
+addgroup ftp2100 #crée le groupe
+adduser monUser --shell /bin/false --home /home/monUser --ingroup ftp2100  #crée l'utilisateur et ajouter le au groupe
+
+
+Pour que l'utilisateur puisse se connecter au serveur FTP et télécharger spécifier son répertoire d'origine dans proftpd.conf:
+
+<Directory /home /user1>
+    Umask 022 
+    AllowOverwrite off
+    <Limit LOGIN>
+        AllowUser user1
+        DenyAll
+    </Limit>
+    <Limit ALL>
+        AllowUser user1
+        DenyAll
+    </Limit>
+</Directory>
+
+restreint le répetoire pour en faire un référentiel pour les fichiers d'user1:
+Umask(022) le propriétaire reçoit tout les droits les autres ne peuvent lire les fichiers et ne les exécute que si le propriétaire l'autorise.
+AllowOverwrite est désactivée pour éviter que les données savegardées ne soit écrasée lors du téléchargement de fichier.
+La connexion FTP (Limit LOGIN) et l'exécution des commandes FTP (Limit ALL) sont bloquées pour tous les utilisateurs à l'exception d'user1.
+
+
+Autoriser l'accès anonyme et l'accès aux fichiers de manière anonyme:
+>sudo chmod 755 -R /home/ftpdownload
+le propriétaire à tous les droit (7) et les utilisateur du groupe et les autres peuvent lire et exécuter(5)
+L'accès anonyme dans proftdp.conf
+<Anonymous ~ftp>
+User    ftp
+Group    ftpgroup
+# Profils de connexion possibles pour Clients
+UserAlias    anonymous    ftp
+# Masquer les propriétés des utilisateurs et des groupes et maximiser le nombre de Client 
+DirFakeUser on ftp
+DirFakeGroup on ftp
+RequireValidShell    off
+MaxClients    10
+<Directory *>
+    <Limit WRITE>
+        DenyAll
+    </Limit>
+</Directory>
+</Anonymous>
+
+pour accéder au serveur FTP avec le profil ftp vous devez l'ajouter au groupe ftpuser
+>sud adduser ftp ftpgroup
+
+CONFIGURATION SSL/TLS
+>apt install openssl   #openssl boite à outils cryptographiques.
+Générer le certification et clef
+mkdir /etc/proftpd/ssl
+Générerz le certificat (proftpd.cet.pem= et la clef (proftpd.key.pem) avec une drrée d'un an 
+openssl req -new -x509 -days 365 -nodes -out /etc/proftpd/ssl/proftpd.cert.pem -keyout /etc/proftpd/ssl/proftpd.key.pem
+
+Renseignement:
+Country Name (2 letter code) : code de pays, par exemple „FR“ pour la France
+State or Province Name (full name) : Région/Département, par exemple „Alsace“
+Locality Name (eg, city) : ville, par exemple „Strasbourg“
+Organization Name (eg, company) : nom de l’entreprise ou votre nom
+Organizational Unit Name (eg, company) : indication du département (si disponible), par exemple „IT“
+Common Name (eg, YOUR name) : indication du domaine à protéger, par exemple „ftp.example.com.“
+Email Address : adresse email
+
+
+Activer SSL/TLS dna ProFTPD
+activer le module mod_tls de proftpd quelques ajustement sont nécessaires dans proftpd.conf
+<IfModule mod_tls.c>
+    TLSEngine    off
+</IfModule>
+
+Assigner la valeur .on à la directive TLS Engine et étendre la section comme suit:
+<IfModule mod_tls.c>
+    TLSEngine            on
+    TLSLog                /var/log/proftpd/tls.log
+    TLSProtocol            TLSv1 TLSv1.1 TLSv1.2
+    TLSRSACertificateFile        /etc/proftpd/ssl/proftpd.cert.pem
+    TLSRSACertificateKeyFile    /etc/proftpd/ssl/proftpd.key.pem
+    TLSVerifyClient            off
+    TLSRequired            on
+</IfModule>
+
+Nous avons activé le chiffrement SSL/TLS pourle serveur FTP le fichier de log pour l'enregistrement des connexions FTP (TLSLog) et les chemins des certificats.
+les versions de protocole possibles sont aussi indiquées et les deux dernières lignes signifient que le module ne vérifi pas les certificats présentés par le client (TLSVrifyClient)
+et et que le chiffrement est une condition de base pour établir une connexion (TSLRequiremnt) Redémarrage:
+> /etc/init.d/proftpd restart
+
+
+MAIS le mieux est le SFTP qui permet de passer avec un seul port depuis le firewall
+
+
+Créer des Utilisateur virtuel ce qui ne sont pas dans /etc/passwd
+Nous avons besoin de définir des permissions pour des utilisateur qui ne sont pas enregistré sur le serveur FTP. Des utilisateurs virtuels.
+Utilisteur virtuel est un utilisateur qui n'est pas défini dans le fichier/etc/passwd avec un UID et GID.
+Présenter des UID différent des distribution débutent avec 1000.
+confiné les utilisateurs virtuels dans leur répertoire avec DefaultRoot ~
+Pas de shell pour les utilisateur virtuels pour ne pas passer des commandes sur le serveur > echo /bin/false >> /etc/shells
+cat /etc/shells  pour voir les shells
+Définir les utilisateurs virtuels ?
+Existance de ces utilisateurs donc pas dans passwd ni dans porftpd.conf
+Mais dans AuthUserFIle, LDAP SGDB SQL, Serveur RADIUS.
+l'authetification simple dans  AuthUserFile et AuthGroupFile dans deux fichiers dans le même format que /etc/passwd et /etc/group
+Pour créer les fchiers avec les utilisateur il existe l'outils ftpasswd intégré dans proftpd à partir de Mageia 3.
+crée un utilisateur virtuel:
+cd /etc pour placer le résultat dans le bon répertoire, ensuite :
+ftpasswd --passwd --name=ftpuser --uid=800 --gid=800 --home=/home/ftp --shell=/bin/false
+cela va créer /etc/ftpd.passwd et ajouter l'utilisateur ftpuser.
+
+Il faut également créer le groupe, par exemple ftpgroup
+ftpasswd --group --name=ftpgroup --gid=800 --member=ftpuser
+Cette commande va créer un fichier /etc/ftpd.group (s'il n'existe pas encore) et va y ajouter le groupe ftpgroup.
+
+Valider les fichiers créés
+La configuration de proftpd doit pendre en compte ces nouveaux fichiers.
+Dans votre console root, modifiez le fichier /etc/proftpd.conf :
+mousepad /etc/proftpd.conf
+Ajoutez les deux lignes suivantes :
+AuthUserFile /etc/ftpd.passwd
+AuthGroupFile /etc/ftpd.group
+
+Comment changer les IDs des répertoires/fichiers ?
+Si besoin, créez le(s) répertoire(s) dédié(s). Toujours dans la console root :
+mkdir /home/ftp (le répertoire que vous leur avez attribué avec la commande ftpasswd)
+Il faut changer les propriétés du répertoire destiné aux utilisateurs virtuels, de façon à ce qu'il corresponde aux UID et GID des utilisateurs virtuels.
+chown -R 800:800 /home/ftp
+
+------------------------exemple d'utilisateurs virtuels avec leurs dossiers et un dossier commun entre eux----------------------------------------
+/etc/proftpd.conf  on part sur un FTP de base ou un FTP anonyme (n'importe qui accède à un répertoire défini /var/ftp)
+AuthUserFile /etc/proftpd.passwd
+AuthGroupFile /etc/proftpd.group
+
+exemple des deux directives plus complète:
+-----------------------------------------
+En fait, ces deux directives peuvent être plus complètes :
+définir une fourchette pour les IDs
+définir les répertoires valides, sous la forme de regex (expression rationnelle)
+définir les identifiants valides, sous la forme de regex (expression rationnelle)
+Voici un exemple :
+AuthUserFile /etc/proftpd/passwd id 2000-2500 name ^ftp home !^/home
+id 2000-2500 : les IDs doivent être compris entre 2000 et 2500
+name ^ftp : les identifiants doivent tous commencer par ftp
+home !^/home : le répertoire de base ne doit pas commencer par /home		
+
+
+
+Vous décidez d'attribuer le shell /bin/false à tous les utilisateurs virtuels.
+Il faut éventuellement l'ajouter à la liste des shells.
+Pour l'ajouter, toujours dan la console root :
+echo /bin/false >> /etc/shells
+
+Création des trois utilisateurs virtuels manon, papet et ugolin
+Ils auront les UIDs et GIDs respectifs 801, 802, 803.
+cd /etc pour placer le résultat dans le bon répertoire, ensuite :
+ftpasswd --passwd --name=manon --uid=801 --gid=801 --home=/home/manon --shell=/bin/false
+ftpasswd --passwd --name=papet --uid=802 --gid=802 --home=/home/papet --shell=/bin/false
+ftpasswd --passwd --name=ugolin --uid=803 --gid=803 --home=/home/ugolin --shell=/bin/false
+
+Création des trois groupes virtuels
+ftpasswd --group --name=manon --gid=801 --member=manon
+ftpasswd --group --name=papet --gid=802 --member=papet
+ftpasswd --group --name=ugolin --gid=803 --member=ugolin
+
+Préparation des répertoires
+Il reste à préparer les répertoires d'accueil des utilisateurs virtuels
+Dans le terminal, encore ouvert en mode root :
+mkdir /home/manon
+chown 801:801 /home/manon
+mkdir /home/papet
+chown 802:802 /home/papet
+mkdir /home/ugolin
+chown 803:803 /home/ugolin
+
+
+
+Travaux commun sur /home/sources
+créer un utilisateur virtuel sources auquel se connecteront les utilisateurs concernés.
+Chaque utilisateur virtuel se connectera sous le pseudo "sources" pour accéder au répertoire commun et non sous son login habituel.
+Petit inconvénient : tous les documents appartiendront à sources, sans indiquer quel en est l'auteur réel.
+
+Vous devrez :
+
+Ajouter les deux lignes dans le fichier /etc/proftpd.conf, comme ci-dessus.
+Ajouter le shell /bin/false, comme ci-dessus.
+Créer l'utilisateur sources :
+ftpasswd --passwd --name=sources --uid=800 --gid=800 --home=/home/sources --shell=/bin/false
+Créer le groupe sources :
+ftpasswd --group --name=sources --gid=800 --member=sources
+Créer le répertoire communmkdir /home/sources
+Attribuer le bon propriétairechown 800:800 /home/sources
+Attribuer les bons droitschmod 755 /home/sources (lecture/écriture/exécution pour le propriétaire, lecture/exécution pour le groupe et les autres).
+
+combiner les utilisations des exemples précédents:
+La solution consiste à créer les trois utilisateurs virtuels comme dans le premier exemple, mais les utilisateurs appartiendront au groupe sources.
+Ils auront leur répertoire personnel plus un répertoire commun /home/sources.
+Ils se connecterons sous leur login habituel : manon, papet ou ugolin.
+
+Vous devrez :
+-------------
+Ajouter les deux lignes dans le fichier /etc/proftpd.conf, comme ci-dessus.
+Ajouter le shell /bin/false, comme ci-dessus.
+Modifier la ligne DefaultRoot ~ en DefaultRoot /home, dans le fichier /etc/proftpd.conf, pour confiner tous les utilisateurs ftp (réels et virtuels) en /home.
+À la connexion, ils seront automatiquement dirigés vers leur propre répertoire. Ils pourront remonter à /home et voir tous les répertoires de /home. Ils ne pourront cependant accéder qu'à leur propre répertoire et à /home/sources.
+Créer les utilisateurs sources, manon, papet et ugolin :
+ftpasswd --passwd --name=sources --uid=800 --gid=800 --home=/home/sources --shell=/bin/false
+ftpasswd --passwd --name=manon --uid=801 --gid=800 --home=/home/manon --shell=/bin/false
+ftpasswd --passwd --name=papet --uid=802 --gid=800 --home=/home/papet --shell=/bin/false
+ftpasswd --passwd --name=ugolin --uid=803 --gid=800 --home=/home/ugolin --shell=/bin/false
+Créer le groupe sources :
+ftpasswd --group --name=sources --gid=800 --member=manon,papet,ugolin
+Créer les répertoires commun et personnelsmkdir /home/{sources,manon,papet,ugolin}
+Attribuer le bon propriétaire :
+chown 800:800 /home/sources
+chown 801:800 /home/manon
+chown 802:800 /home/papet
+chown 803:800 /home/ugolin
+Attribuer les bons droits (lecture/écriture/exécution pour le propriétaire et le groupe, rien pour les autres). :
+chmod 770 /home/sources
+Attribuer les bons droits (lecture/écriture/exécution pour le propriétaire, rien pour le groupe et les autres)
+chmod 700 /home/manon
+chmod 700 /home/papet
+chmod 700 /home/ugolin
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Si Problème
+„mod_tls_memcache/0.1: notice: unable to register 'memcache' SSL session cache: Memcache support not enabled“
+commentez # LoadModule mod_tls_memcache.c  la mise en cache 
+Les vérifications sont
+sudo service proftpd status  					#exécution
+sudo netstat -tlp|grep proftpd  				# si proftpd écoute sur le port 21 pour enregistrer les réquêtes FTP entrantes
+sudo tail -20 /var/log/proftpd/proftpd.log  			#les messages d'erreur dan le log ProFTPD
+sudo tail -20 /var/log/proftpd/tls.log 				#message dans le log tls
+sudo telnet 192.0.2.10 21  					#test connexino avec telnet
+sudo openssl s_client -connect 192.0.2.10:21 -stattls ftp   	#tests de connexion sur le port 21 avec TLS
+http://proftpd.org/docs/
+Erreur:
+tail -20 /var/log/proftpd/proftpd.log 
+(Login failed): Invalid shell: '/bin/false'
+RequireValidShell       no
+
+
+
